@@ -5,13 +5,7 @@ Array.prototype.swap = function(i,j){// eslint-disable-line no-extend-native
 }
 
 export default class BoardLogic{
-    /**
-     * Constructor
-     * @param {*} data can be one of three:
-     * size (number): init matrix with size number*number 
-     * matrix: if array use given array as matrix
-     * other: use default size
-     */
+   
     constructor(data){
         const DEFAULT_SIZE=3;
         if(Array.isArray(data)){ // Data is Array
@@ -31,21 +25,14 @@ export default class BoardLogic{
      return Array.from({length:size*size},(_,b)=>b);
     }
     
-    /**
-     * Getter, return a copy of the game board 
-     */
+   
     get matrix() {
       return this.board.reduce(
         (rows, key, index) => (index % this.size === 0 ? 
         rows.push([key]) : rows[rows.length-1].push(key)) && rows, []);
     }
      
-    /**
-     * moves the tile at the given (i,j) cordinates 
-     * to the current empty space (only if legal)
-     * @param {*} i row index
-     * @param {*} j column index
-     */
+   
     move(i,j){
       let legalFriends = this.getLegalFriends(i,j);
       let b2c = ({i,j}) => this.size*j+i;

@@ -10,9 +10,9 @@ class Board extends Component {
   static defaultProps = {
     size: 3,
     onMove: (i, j) => {
-      console.log(`Clicked tile ${i},${j}`);
+    //   console.log(`Clicked tile ${i},${j}`);
     },
-    timerDuration: 5,
+    timerDuration: 120,
   };
 
   constructor(props) {
@@ -25,7 +25,7 @@ class Board extends Component {
       board: this.initialGameState().board,
       moves: 0,
       isWin: false,
-      // Add any other state properties you need
+      timerEnded: false,
     };
   }
 
@@ -41,22 +41,34 @@ class Board extends Component {
 
   tick = () => {
     this.setState((prevState) => {
-      // Only decrement the timer if it's greater than 0
-      const newTimer = prevState.timer > 0 ? prevState.timer - 1 : 0;
-      if (newTimer <= 0) {
-        clearInterval(this.timerInterval); // Corrected from this.timer to this.timerInterval
-        this.handleTimerEnd();
-      }
-      return { timer: newTimer };
-    });
-  };
+       const newTimer = prevState.timer > 0 ? prevState.timer - 1 : 0;
 
-  handleTimerEnd = () => {
+        if(this.isNewGameClicked){
+            this.isNewGameClicked = false;
+        }
+
+       if (newTimer <= 0 && !prevState.timerEnded) {
+         clearInterval(this.timerInterval);
+         this.handleTimerEnd();
+         return { timer: newTimer, timerEnded: true }; // Set the flag to true
+       }
+       return { timer: newTimer };
+    });
+   };
+
+   handleTimerEnd = () => {
     if (!this.state.isWin) {
-      toast.dismiss();
-      toast.error("Time's up! You lose.");
+       toast.dismiss();
+       // Check if the game ended due to the timer reaching 0
+       if (this.state.timer <= 0) {
+         // Display a specific message for when the timer reaches 0
+        //  console.log("Time's up! You lose.");
+       } else {
+         // Display a different message if the game ended for another reason
+        //  console.log("Game ended for another reason.");
+       }
     }
-  };
+   };
 
   startTimer = () => {
     this.setState({ timer: this.props.timerDuration });
@@ -114,6 +126,10 @@ class Board extends Component {
   };
 
   newGame = () => {
+    this.setState({ isNewGameClicked: true }, () => {
+      
+     });
+    // console.log(this.state.isNewGameClicked)
     toast.dismiss();
     this.setState(this.initialGameState());
     clearInterval(this.timer);
@@ -130,8 +146,12 @@ class Board extends Component {
   
 
     let timerEndMessage = isTimerEnded ? (
-      <p>Please click "Start New" to play the game.</p>
-    ) : null ;
+        this.state.isNewGameClicked ? (
+          <p className="timer-end-message">Great effort! Remember, it's not always about winning, but about the journey and the lessons learned. You can try again.</p>
+        ) : (
+          <p >Please click "Start New" to play the game.</p>
+        )
+     ) : null;
 
     return (
       <>
@@ -149,9 +169,10 @@ class Board extends Component {
           <span className={`slider-msg ${isTimerEnded?"d-hide":""}`}>
             <h4>{message}</h4>
           </span>
-          <div>
+          <div className="timer-end-message">
           {timerEndMessage}
           </div>
+        
           
           <div className="btn-new-game">
             <button onClick={this.newGame}>New Game</button>

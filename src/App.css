@@ -109,3 +109,9 @@ code {
 .d-hide{
   display: none;
 }
+
+.timer-end-message{
+  max-width: 80%;
+  margin:auto;
+  margin-top: 20px;
+}
